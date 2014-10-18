@@ -39,7 +39,7 @@ class Calendar {
 	
 	private function _writeEventList() {
 		foreach( $this->events as $event ) {
-			fwrite( $this->file, $event->write() );
+			fwrite( $this->file, $event->write( $this->prodid ) );
 		}
 	}
 	

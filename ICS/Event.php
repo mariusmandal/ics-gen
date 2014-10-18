@@ -52,19 +52,24 @@ class Event {
 		$this->status = $status;
 	}
 	
-	public function write() {
+	public function setLocation( $location ) {
+		$this->location = $location;
+	}
+	
+	public function write( $calendarProdID ) {
 		$event = 'BEGIN:VEVENT' ."\r\n"
 				.'DTSTART;VALUE=DATE:'. $this->start->format( $this->dateFormat ) ."\r\n"
 				.'DTEND;VALUE=DATE:'. $this->stop->format( $this->dateFormat ) ."\r\n"
 				.'SUMMARY:'. $this->title ."\r\n"
 				.'LOCATION: '. $this->location ."\r\n"
-				.'UID: '. $this->owner .'-'.uniqid() ."\r\n"
+				.'UID: #insertIDhere'  ."\r\n"
 				.'SEQUENCE:0' ."\r\n"
 				.'DESCRIPTION:'. $this->description ."\r\n"
 				.'STATUS:'. $this->status ."\r\n"
 				.'END:VEVENT' ."\r\n"
 				;
-		return $event;
+		$id = sha1( $event .'@'. $calendarProdID );
+		return str_replace('#insertIDhere', $id, $event);
 	}
 	
 }
