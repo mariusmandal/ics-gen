@@ -19,6 +19,8 @@ class Event {
 	var $location = '';
 	var $owner = 'marius@mariusmandal.no';
 	var $status = 'CONFIRMED';
+	// Array of ICS\Alarm-objects
+	var $alarms;
 	
 	private $dateFormat = 'Ymd';
 
@@ -26,6 +28,7 @@ class Event {
 		$this->title = $title;
 		$this->start = new DateTime();
 		$this->stop = new DateTime();
+		$this->alarms = array();
 	}
 	
 	public function setTitle( $title ) {
@@ -56,6 +59,10 @@ class Event {
 		$this->location = $location;
 	}
 	
+	public function addAlarm($alarm) {
+		$this->alarms[] = $alarm;
+	}
+
 	public function write( $calendarProdID ) {
 		$event = 'BEGIN:VEVENT' ."\r\n"
 				.'DTSTART;VALUE=DATE:'. $this->start->format( $this->dateFormat ) ."\r\n"
@@ -66,10 +73,19 @@ class Event {
 				.'SEQUENCE:0' ."\r\n"
 				.'DESCRIPTION:'. $this->description ."\r\n"
 				.'STATUS:'. $this->status ."\r\n"
+				.$this->_writeAlarms()
 				.'END:VEVENT' ."\r\n"
 				;
 		$id = sha1( $event .'@'. $calendarProdID );
 		return str_replace('#insertIDhere', $id, $event);
+	}
+
+	private function _writeAlarms() {
+		$text = '';
+		foreach ($this->alarms as $alarm) {
+			$text .= $alarm->write();
+		}
+		return $text;
 	}
 	
 }
